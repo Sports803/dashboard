@@ -295,13 +295,13 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
       </div>
     </div>
     <div class="card">
-      <div class="card-title">🤖 DeepSeek AI Engine
+      <div class="card-title">🤖 AI Content Engine
         <span class="ct-right" id="ds-status-badge"><span class="deepseek-badge">NOT CONFIGURED</span></span>
       </div>
-      <div id="ds-engine-status" style="font-size:.76rem;color:var(--muted2)">Add NVIDIA API key in Settings → AI Content to enable AI-written articles.</div>
+      <div id="ds-engine-status" style="font-size:.76rem;color:var(--muted2)">Add an API key in Settings → AI Content to enable AI-written articles.</div>
       <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
-        <button class="btn-purple btn-xs" onclick="showPage('settings')">⚙ Configure DeepSeek</button>
-        <button class="btn-ghost btn-xs" onclick="testClaude()">🧪 Test Connection</button>
+        <button class="btn-purple btn-xs" onclick="showPage('settings')">⚙ Configure AI</button>
+        <button class="btn-ghost btn-xs" onclick="testAllAiProviders()">🧪 Test All Keys</button>
       </div>
     </div>
     <div class="card">
@@ -720,62 +720,22 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 <button class="btn-red btn-sm" onclick="saveCFG()">💾 Save</button>
     </div>
     <div class="card" style="grid-column:1/-1;border-color:rgba(114,9,183,.3)">
-      <div class="card-title" style="color:#b47ffa">🤖 AI Content Engine
+      <div class="card-title" style="color:#b47ffa">🤖 AI Content Engine — Multi-Provider Fallback
         <span class="ct-right"><span id="ds-cfg-badge" class="deepseek-badge">NOT CONFIGURED</span></span>
       </div>
       <div style="background:rgba(114,9,183,.06);border:1px solid rgba(114,9,183,.2);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.78rem">
-        <strong style="color:#b47ffa;font-family:var(--cond)">Why AI articles?</strong>
-        <span style="color:var(--muted2)"> Writes detailed match previews &amp; highlights · Excellent SEO · Context-aware articles using team names, league, score, and kickoff time. Choose NVIDIA (DeepSeek + other NIM models) or Google Gemini below.</span>
+        <strong style="color:#b47ffa;font-family:var(--cond)">How this works</strong>
+        <span style="color:var(--muted2)"> Add one or more API keys below (any mix of NVIDIA NIM and Google Gemini). Sports 803 tries them <strong>in order, top to bottom</strong> — if one is out of quota, temporarily overloaded, or errors, it automatically falls back to the next one. Use the ⬆⬇ buttons to set priority.</span>
       </div>
-      <div class="form-row">
-        <div>
-          <label>AI Provider</label>
-          <select id="cfg-deepseek-provider" onchange="onProviderChange()">
-            <option value="nvidia">NVIDIA NIM (DeepSeek, Llama, Nemotron, Qwen…)</option>
-            <option value="gemini">Google Gemini</option>
-          </select>
-        </div>
-        <div>
-          <label id="cfg-deepseek-key-label">NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span></label>
-          <input type="password" id="cfg-deepseek-key" placeholder="nvapi-…" oninput="onClaudeKeyChange()">
-        </div>
-      </div>
-      <div class="form-row">
-        <div>
-          <label>Model</label>
-          <select id="cfg-deepseek-model" onchange="onModelSelectChange()">
-            <optgroup id="cfg-model-group-nvidia" label="NVIDIA NIM">
-              <option value="deepseek-ai/deepseek-v4-flash">DeepSeek V4 Flash (fast &amp; cheap)</option>
-              <option value="deepseek-ai/deepseek-v4-pro">DeepSeek V4 Pro (best quality, 1M ctx)</option>
-              <option value="deepseek-ai/deepseek-r1">DeepSeek R1 (reasoning)</option>
-              <option value="meta/llama-3.3-70b-instruct">Llama 3.3 70B Instruct</option>
-              <option value="meta/llama-3.1-405b-instruct">Llama 3.1 405B Instruct</option>
-              <option value="qwen/qwen2.5-72b-instruct">Qwen 2.5 72B Instruct</option>
-              <option value="nvidia/llama-3.1-nemotron-70b-instruct">Nemotron 70B Instruct</option>
-              <option value="mistralai/mixtral-8x22b-instruct-v0.1">Mixtral 8x22B Instruct</option>
-              <option value="__custom__">Custom model ID…</option>
-            </optgroup>
-            <optgroup id="cfg-model-group-gemini" label="Google Gemini" style="display:none">
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash (fast &amp; cheap)</option>
-              <option value="gemini-2.5-pro">Gemini 2.5 Pro (best quality)</option>
-              <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (fastest)</option>
-              <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
-              <option value="__custom__">Custom model ID…</option>
-            </optgroup>
-          </select>
-        </div>
-        <div id="cfg-model-custom-wrap" style="display:none">
-          <label>Custom Model ID <span style="color:var(--muted2);font-weight:400">— e.g. any NVIDIA NIM catalog ID</span></label>
-          <input type="text" id="cfg-deepseek-model-custom" placeholder="e.g. mistralai/mistral-large-2-instruct" oninput="saveCFG()">
-        </div>
-      </div>
+      <div id="ai-providers-list"></div>
+      <button class="btn-purple btn-sm" onclick="addAiProvider()" style="margin-bottom:14px">➕ Add API Key</button>
       <div class="form-group">
         <label>Article Tone / Style prompt (optional)</label>
-        <input type="text" id="cfg-deepseek-tone" placeholder="e.g. Enthusiastic sports journalist, punchy sentences, include match context">
+        <input type="text" id="cfg-deepseek-tone" placeholder="e.g. Enthusiastic sports journalist, punchy sentences, include match context" oninput="CFG.deepseekTone=v('cfg-deepseek-tone');saveAll();">
       </div>
       <div class="form-group">
         <label>Article Length</label>
-        <select id="cfg-deepseek-length" onchange="saveCFG()">
+        <select id="cfg-deepseek-length" onchange="CFG.deepseekLength=this.value;saveAll();">
           <option value="short">Short — ~300 words (fast)</option>
           <option value="medium" selected>Medium — ~600 words</option>
           <option value="long">Long — ~1000 words (best SEO)</option>
@@ -783,8 +743,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
         </select>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-purple btn-sm" onclick="saveCFG()">💾 Save DeepSeek Settings</button>
-        <button class="btn-ghost btn-sm" onclick="testClaude()">🧪 Test Connection</button>
+        <button class="btn-ghost btn-sm" onclick="testAllAiProviders()">🧪 Test All Keys</button>
       </div>
       <div id="ds-test-result" style="font-size:.72rem;color:var(--muted2);margin-top:8px;font-family:var(--mono);min-height:14px"></div>
     </div>
@@ -946,6 +905,7 @@ let CFG={
   autoFetchStreams:false,enableDdkanqu:false,enableKafeizhibo:false,embedStreamsInPost:true,
   ddkanquMappingsRaw:'',
   deepseekKey:'',deepseekProvider:'nvidia',deepseekModel:'deepseek-ai/deepseek-v4-flash',deepseekModelCustom:'',deepseekTone:'',deepseekLength:'medium',
+  aiProviders:[],
 ytApiKey:''
 };
 let LOGO_OVERRIDES={},LOGO_CACHE={};
@@ -1066,10 +1026,6 @@ function saveCFG(){
   CFG.enableKafeizhibo=document.getElementById('cfg-enable-kafeizhibo')?.checked||false;
   CFG.embedStreamsInPost=document.getElementById('cfg-embed-streams-in-post')?.checked??true;
   CFG.ddkanquMappingsRaw=v('cfg-ddkanqu-mappings');
-  CFG.deepseekProvider=document.getElementById('cfg-deepseek-provider')?.value||'nvidia';
-  CFG.deepseekKey=sanitizeKey(v('cfg-deepseek-key'));
-  CFG.deepseekModel=document.getElementById('cfg-deepseek-model')?.value||'deepseek-ai/deepseek-v4-flash';
-  CFG.deepseekModelCustom=v('cfg-deepseek-model-custom');
   CFG.deepseekTone=v('cfg-deepseek-tone');
   CFG.deepseekLength=document.getElementById('cfg-deepseek-length')?.value||'medium';
   ddkanquMappings=parseDDKMappings(CFG.ddkanquMappingsRaw);
@@ -1092,25 +1048,10 @@ function applyConfigToUI(){
   if(document.getElementById('cfg-enable-ddkanqu'))document.getElementById('cfg-enable-ddkanqu').checked=CFG.enableDdkanqu||false;
   if(document.getElementById('cfg-enable-kafeizhibo'))document.getElementById('cfg-enable-kafeizhibo').checked=CFG.enableKafeizhibo||false;
   if(document.getElementById('cfg-embed-streams-in-post'))document.getElementById('cfg-embed-streams-in-post').checked=CFG.embedStreamsInPost!==false;
-  set('cfg-deepseek-key',CFG.deepseekKey||'');set('cfg-deepseek-tone',CFG.deepseekTone||'');
-  if(document.getElementById('cfg-deepseek-provider'))document.getElementById('cfg-deepseek-provider').value=CFG.deepseekProvider||'nvidia';
-  if(document.getElementById('cfg-deepseek-model'))document.getElementById('cfg-deepseek-model').value=CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash';
-  set('cfg-deepseek-model-custom',CFG.deepseekModelCustom||'');
+  set('cfg-deepseek-tone',CFG.deepseekTone||'');
   if(document.getElementById('cfg-deepseek-length'))document.getElementById('cfg-deepseek-length').value=CFG.deepseekLength||'medium';
-  // Sync the provider/model UI (group visibility, custom-field visibility, key label) without re-saving
-  if(document.getElementById('cfg-deepseek-provider')){
-    const p=CFG.deepseekProvider||'nvidia';
-    const nvGroup=document.getElementById('cfg-model-group-nvidia'),gmGroup=document.getElementById('cfg-model-group-gemini');
-    if(nvGroup)nvGroup.style.display=(p==='nvidia')?'':'none';
-    if(gmGroup)gmGroup.style.display=(p==='gemini')?'':'none';
-    const keyLabel=document.getElementById('cfg-deepseek-key-label'),keyInput=document.getElementById('cfg-deepseek-key');
-    if(keyLabel&&keyInput){
-      if(p==='gemini'){keyLabel.innerHTML='Gemini API Key <span style="color:var(--muted2);font-weight:400">— get at aistudio.google.com</span>';keyInput.placeholder='AIzaSy…';}
-      else{keyLabel.innerHTML='NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span>';keyInput.placeholder='nvapi-…';}
-    }
-    const wrap=document.getElementById('cfg-model-custom-wrap');
-    if(wrap)wrap.style.display=(CFG.deepseekModel==='__custom__')?'':'none';
-  }
+  migrateSingleProviderToList();
+  renderAiProvidersList();
   updateClaudeStatus();
 }
 function v(id){return document.getElementById(id)?.value?.trim()||'';}
@@ -1121,78 +1062,171 @@ function clearAll(){if(!confirm('Clear all data?'))return;[SK_CFG,SK_CH,SK_POST,
 function saveLogoOverrides(){CFG.logoOverridesRaw=v('cfg-logo-overrides');LOGO_OVERRIDES=parseLOOverrides(CFG.logoOverridesRaw);saveAll();toast('Overrides saved — '+Object.keys(LOGO_OVERRIDES).length+' entries ✓','s');}
 function parseLOOverrides(raw){const o={};(raw||'').split('\n').forEach(l=>{const[k,...vv]=l.split('=');if(k&&vv.length)o[k.trim().toLowerCase()]=vv.join('=').trim();});return o;}
 
-// ═══ AI ENGINE (NVIDIA NIM + Google Gemini via proxy) ═══
+// ═══ AI ENGINE (multi-provider: NVIDIA NIM + Google Gemini, via proxy) ═══
 // Strips anything that isn't a plain visible ASCII character — smart quotes,
 // zero-width spaces, stray newlines, etc. copied in by accident from Notes/
 // screenshots are exactly what triggers Safari's cryptic header error below.
 function sanitizeKey(s){return (s||'').replace(/[^\x21-\x7E]/g,'');}
-function currentProvider(){return document.getElementById('cfg-deepseek-provider')?.value||CFG.deepseekProvider||'nvidia';}
-function currentModel(){
-  const sel=document.getElementById('cfg-deepseek-model')?.value||CFG.deepseekModel;
-  if(sel==='__custom__'){return v('cfg-deepseek-model-custom')||CFG.deepseekModelCustom||'';}
-  return sel||'deepseek-ai/deepseek-v4-flash';
+const AI_MODELS={
+  nvidia:[
+    ['deepseek-ai/deepseek-v4-flash','DeepSeek V4 Flash (fast & cheap)'],
+    ['deepseek-ai/deepseek-v4-pro','DeepSeek V4 Pro (best quality, 1M ctx)'],
+    ['deepseek-ai/deepseek-r1','DeepSeek R1 (reasoning)'],
+    ['meta/llama-3.3-70b-instruct','Llama 3.3 70B Instruct'],
+    ['meta/llama-3.1-405b-instruct','Llama 3.1 405B Instruct'],
+    ['qwen/qwen2.5-72b-instruct','Qwen 2.5 72B Instruct'],
+    ['nvidia/llama-3.1-nemotron-70b-instruct','Nemotron 70B Instruct'],
+    ['mistralai/mixtral-8x22b-instruct-v0.1','Mixtral 8x22B Instruct'],
+  ],
+  gemini:[
+    ['gemini-2.5-flash','Gemini 2.5 Flash (fast & cheap)'],
+    ['gemini-2.5-pro','Gemini 2.5 Pro (best quality)'],
+    ['gemini-2.5-flash-lite','Gemini 2.5 Flash-Lite (fastest)'],
+    ['gemini-3.5-flash','Gemini 3.5 Flash'],
+  ],
+};
+function genAiId(){return 'ai'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function hasAnyAiKey(){return (CFG.aiProviders||[]).some(p=>p.enabled!==false&&sanitizeKey(p.key));}
+// One-time migration from the old single-provider fields into the new list.
+function migrateSingleProviderToList(){
+  if(CFG.aiProviders&&CFG.aiProviders.length)return;
+  if(!CFG.deepseekKey)return;
+  CFG.aiProviders=[{
+    id:genAiId(),provider:CFG.deepseekProvider||'nvidia',key:CFG.deepseekKey,
+    model:CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash',modelCustom:CFG.deepseekModelCustom||'',enabled:true
+  }];
+  saveAll();
 }
-function onProviderChange(){
-  const p=document.getElementById('cfg-deepseek-provider').value;
-  document.getElementById('cfg-model-group-nvidia').style.display=(p==='nvidia')?'':'none';
-  document.getElementById('cfg-model-group-gemini').style.display=(p==='gemini')?'':'none';
-  const modelSel=document.getElementById('cfg-deepseek-model');
-  // Jump to the first real (non-custom) option of the newly active group
-  const activeGroup=(p==='nvidia')?document.getElementById('cfg-model-group-nvidia'):document.getElementById('cfg-model-group-gemini');
-  const firstOpt=activeGroup.querySelector('option:not([value="__custom__"])');
-  if(firstOpt)modelSel.value=firstOpt.value;
-  const keyLabel=document.getElementById('cfg-deepseek-key-label');
-  const keyInput=document.getElementById('cfg-deepseek-key');
-  if(p==='gemini'){
-    keyLabel.innerHTML='Gemini API Key <span style="color:var(--muted2);font-weight:400">— get at aistudio.google.com</span>';
-    keyInput.placeholder='AIzaSy…';
-  }else{
-    keyLabel.innerHTML='NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span>';
-    keyInput.placeholder='nvapi-…';
-  }
-  onModelSelectChange();
-  saveCFG();
+function addAiProvider(){
+  if(!CFG.aiProviders)CFG.aiProviders=[];
+  CFG.aiProviders.push({id:genAiId(),provider:'nvidia',key:'',model:'deepseek-ai/deepseek-v4-flash',modelCustom:'',enabled:true});
+  saveAll();renderAiProvidersList();updateClaudeStatus();
 }
-function onModelSelectChange(){
-  const isCustom=document.getElementById('cfg-deepseek-model')?.value==='__custom__';
-  const wrap=document.getElementById('cfg-model-custom-wrap');
-  if(wrap)wrap.style.display=isCustom?'':'none';
-  saveCFG();
+function removeAiProvider(id){
+  CFG.aiProviders=(CFG.aiProviders||[]).filter(p=>p.id!==id);
+  saveAll();renderAiProvidersList();updateClaudeStatus();
 }
-function onClaudeKeyChange(){CFG.deepseekKey=sanitizeKey(v('cfg-deepseek-key'));updateClaudeStatus();}
+function moveAiProvider(id,dir){
+  const arr=CFG.aiProviders||[];const i=arr.findIndex(p=>p.id===id);
+  const j=i+dir;if(i<0||j<0||j>=arr.length)return;
+  [arr[i],arr[j]]=[arr[j],arr[i]];
+  saveAll();renderAiProvidersList();
+}
+function updateAiProvider(id,field,value){
+  const p=(CFG.aiProviders||[]).find(x=>x.id===id);if(!p)return;
+  if(field==='key')value=sanitizeKey(value);
+  p[field]=value;
+  const structural=(field==='provider'||field==='model');
+  if(field==='provider'){p.model=(AI_MODELS[value]&&AI_MODELS[value][0])?AI_MODELS[value][0][0]:'__custom__';}
+  saveAll();
+  if(structural)renderAiProvidersList();
+  updateClaudeStatus();
+}
+function modelOptionsHtml(provider,selected){
+  const list=AI_MODELS[provider]||[];
+  let html=list.map(([val,label])=>`<option value="${val}" ${val===selected?'selected':''}>${label}</option>`).join('');
+  html+=`<option value="__custom__" ${selected==='__custom__'?'selected':''}>Custom model ID…</option>`;
+  return html;
+}
+function renderAiProvidersList(){
+  const wrap=document.getElementById('ai-providers-list');if(!wrap)return;
+  const list=CFG.aiProviders||[];
+  if(!list.length){wrap.innerHTML='<div style="font-size:.78rem;color:var(--muted2);padding:8px 0">No API keys added yet. Click "➕ Add API Key" below to add your first one.</div>';return;}
+  wrap.innerHTML=list.map((p,i)=>{
+    const keyLabel=p.provider==='gemini'?'Gemini API Key (aistudio.google.com)':'NVIDIA API Key (build.nvidia.com)';
+    const keyPh=p.provider==='gemini'?'AIzaSy…':'nvapi-…';
+    return `<div style="border:1px solid var(--bg4);border-radius:8px;padding:10px;margin-bottom:8px;background:rgba(255,255,255,.02)">
+      <div class="form-row">
+        <div>
+          <label>Priority ${i+1} · Provider</label>
+          <select onchange="updateAiProvider('${p.id}','provider',this.value)">
+            <option value="nvidia" ${p.provider==='nvidia'?'selected':''}>NVIDIA NIM</option>
+            <option value="gemini" ${p.provider==='gemini'?'selected':''}>Google Gemini</option>
+          </select>
+        </div>
+        <div>
+          <label>${keyLabel}</label>
+          <input type="password" value="${(p.key||'').replace(/"/g,'&quot;')}" placeholder="${keyPh}" oninput="updateAiProvider('${p.id}','key',this.value)">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Model</label>
+          <select onchange="updateAiProvider('${p.id}','model',this.value)">${modelOptionsHtml(p.provider,p.model)}</select>
+        </div>
+        <div style="${p.model==='__custom__'?'':'display:none'}">
+          <label>Custom Model ID</label>
+          <input type="text" value="${(p.modelCustom||'').replace(/"/g,'&quot;')}" placeholder="e.g. mistralai/mistral-large-2-instruct" oninput="updateAiProvider('${p.id}','modelCustom',this.value)">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px">
+        <label style="display:flex;gap:4px;align-items:center;font-size:.74rem;color:var(--muted2)">
+          <input type="checkbox" ${p.enabled!==false?'checked':''} onchange="updateAiProvider('${p.id}','enabled',this.checked)"> Enabled
+        </label>
+        <button class="btn-ghost btn-xs" onclick="moveAiProvider('${p.id}',-1)" ${i===0?'disabled':''}>⬆</button>
+        <button class="btn-ghost btn-xs" onclick="moveAiProvider('${p.id}',1)" ${i===list.length-1?'disabled':''}>⬇</button>
+        <button class="btn-ghost btn-xs" onclick="testAiProvider('${p.id}')">🔌 Test</button>
+        <button class="btn-red btn-xs" onclick="removeAiProvider('${p.id}')">🗑 Remove</button>
+        <span id="ai-test-result-${p.id}" style="font-size:.7rem;color:var(--muted2)"></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+function resolveModel(p){return p.model==='__custom__'?(p.modelCustom||''):p.model;}
 function updateClaudeStatus(){
-  const hasKey=!!CFG.deepseekKey;
+  const list=(CFG.aiProviders||[]).filter(p=>p.enabled!==false&&sanitizeKey(p.key));
+  const hasKey=list.length>0;
   const badge1=document.getElementById('ds-status-badge');
   const badge2=document.getElementById('ds-cfg-badge');
   const statusEl=document.getElementById('ds-engine-status');
-  const providerLabel=(CFG.deepseekProvider==='gemini')?'Gemini':'DeepSeek/NVIDIA';
   if(hasKey){
     if(badge1)badge1.innerHTML='<span class="deepseek-badge" style="background:rgba(114,9,183,.25);color:#b47ffa">✓ READY</span>';
-    if(badge2){badge2.textContent='✓ CONFIGURED';badge2.style.background='rgba(114,9,183,.25)';badge2.style.color='#b47ffa';}
-    if(statusEl)statusEl.innerHTML=providerLabel+' AI is configured — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
+    if(badge2){badge2.textContent='✓ '+list.length+' KEY'+(list.length>1?'S':'')+' CONFIGURED';badge2.style.background='rgba(114,9,183,.25)';badge2.style.color='#b47ffa';}
+    if(statusEl)statusEl.innerHTML=list.length+' AI key'+(list.length>1?'s':'')+' configured (with automatic fallback) — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
   }else{
     if(badge1)badge1.innerHTML='<span class="deepseek-badge">NOT CONFIGURED</span>';
     if(badge2){badge2.textContent='NOT CONFIGURED';badge2.style.background='';badge2.style.color='';}
-    if(statusEl)statusEl.textContent='Add your API key in Settings → AI Content to enable AI-written articles.';
+    if(statusEl)statusEl.textContent='Add at least one API key in Settings → AI Content to enable AI-written articles.';
   }
   const btn=document.getElementById('ds-gen-btn');if(btn)btn.style.opacity=hasKey?'1':'0.5';
 }
-async function testClaude(){
-  const key=sanitizeKey(CFG.deepseekKey||v('cfg-deepseek-key'));
-  const provider=currentProvider();
-  const model=currentModel();
-  const res=document.getElementById('ds-test-result');
-  if(!key){if(res)res.textContent='⚠ No API key configured.';toast('Add your API key first','w');return;}
-  if(!model){if(res)res.textContent='⚠ No model selected.';toast('Pick or type a model first','w');return;}
-  if(res)res.textContent='Testing connection…';toast('Testing AI connection…','i');
+async function testProviderOnce(p){
+  const key=sanitizeKey(p.key);
+  const model=resolveModel(p);
+  if(!key)throw new Error('No API key');
+  if(!model)throw new Error('No model selected');
+  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'Reply only: "Sports 803 AI OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
+  const raw=await r.text();
+  let d;try{d=JSON.parse(raw);}catch{d=null;}
+  const msg=d?.choices?.[0]?.message;
+  if(r.ok&&msg?.content)return msg.content;
+  throw new Error(d?.error?.message||raw.slice(0,200)||('HTTP '+r.status));
+}
+async function testAiProvider(id){
+  const p=(CFG.aiProviders||[]).find(x=>x.id===id);if(!p)return;
+  const res=document.getElementById('ai-test-result-'+id);
+  if(res){res.textContent='Testing…';res.style.color='var(--muted2)';}
   try{
-    const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'Reply only: "Sports 803 AI OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
-    const raw=await r.text();
-    let d;try{d=JSON.parse(raw);}catch{d=null;}
-    const msg=d?.choices?.[0]?.message;
-    if(r.ok&&msg?.content){if(res)res.textContent='✓ Connected ('+model+'): '+msg.content;toast('AI connected ✓','s');}
-    else{const errMsg=d?.error?.message||raw.slice(0,200)||('HTTP '+r.status);if(res)res.textContent='✗ Error: '+errMsg;toast('AI error — check key/model','e');}
-  }catch(e){if(res)res.textContent='✗ Network error: '+e.message;toast('Connection failed','e');}
+    const reply=await testProviderOnce(p);
+    if(res){res.textContent='✓ '+reply;res.style.color='var(--green)';}
+  }catch(e){
+    if(res){res.textContent='✗ '+e.message;res.style.color='var(--red)';}
+  }
+}
+async function testAllAiProviders(){
+  const list=CFG.aiProviders||[];
+  const res=document.getElementById('ds-test-result');
+  if(!list.length){if(res)res.textContent='⚠ No API keys added yet.';toast('Add an API key first','w');return;}
+  if(res)res.textContent='Testing '+list.length+' key(s)…';
+  toast('Testing all AI keys…','i');
+  let okCount=0;
+  for(const p of list){
+    await testAiProvider(p.id);
+    const r=document.getElementById('ai-test-result-'+p.id);
+    if(r&&r.textContent.startsWith('✓'))okCount++;
+  }
+  if(res)res.textContent=okCount+' / '+list.length+' key(s) working ✓';
+  toast(okCount+' / '+list.length+' AI keys working','s');
 }
 const DS_LENGTH_WORDS={short:300,medium:600,long:1000,xl:1500};
 function buildClaudePrompt(title,ev,isHighlights=false){
@@ -1213,17 +1247,47 @@ function buildClaudePrompt(title,ev,isHighlights=false){
   const ts=ev.startTime?ev.startTime.toLocaleString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'}):'today';
   return 'You are a '+tone+' writing for Sports 803, a free sports streaming blog.\nWrite a detailed match preview article for: '+h+' vs '+a+' — '+lg+'.\nKickoff: '+ts+'.\nRequirements:\n- Approximately '+words+' words\n- HTML formatted: use <h2>, <p>, <strong>, <ul><li> tags\n- Sections: Match Overview, Current Form, Key Players To Watch, Head-to-Head History, Predicted Lineups & Tactics, Match Prediction\n- Include realistic tactical analysis and form assessment\n- End with: <p>📺 <strong>Watch '+h+' vs '+a+' FREE on Sports 803</strong> — no sign-up required: <a href="'+player+'">'+player+'</a></p>\n- No markdown, only HTML tags\n- Do not include DOCTYPE or body tags, only the article HTML';
 }
-async function callClaude(prompt){
-  const key=sanitizeKey(CFG.deepseekKey);if(!key)throw new Error('No API key configured');
-  const provider=CFG.deepseekProvider||'nvidia';
-  const model=(CFG.deepseekModel==='__custom__'?CFG.deepseekModelCustom:CFG.deepseekModel)||'deepseek-ai/deepseek-v4-flash';
-  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
-  if(!r.ok){const e=await r.text();throw new Error('AI API error '+r.status+': '+e);}
-  const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+function isTransientAIError(status,bodyText){
+  if(status===429||status===503||status===502)return true;
+  const t=(bodyText||'').toLowerCase();
+  return t.includes('resourceexhausted')||t.includes('resource exhausted')||t.includes('worker local total request limit')||t.includes('overloaded')||t.includes('rate limit');
+}
+// Calls a single provider entry, retrying transient (rate-limit/capacity)
+// errors a few times with backoff before giving up on that provider.
+async function callProviderWithRetry(p,prompt,attempt=1){
+  const key=sanitizeKey(p.key);
+  const model=resolveModel(p);
+  if(!key||!model)throw new Error('Provider "'+p.provider+'" is missing a key or model');
+  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
+  if(!r.ok){
+    const e=await r.text();
+    if(isTransientAIError(r.status,e)&&attempt<3){
+      await new Promise(res=>setTimeout(res,1000*Math.pow(2,attempt-1))); // 1s, 2s
+      return callProviderWithRetry(p,prompt,attempt+1);
+    }
+    throw new Error('['+p.provider+'/'+model+'] HTTP '+r.status+': '+e.slice(0,300));
+  }
+  const d=await r.json();if(d.error)throw new Error('['+p.provider+'/'+model+'] '+(d.error.message||JSON.stringify(d.error)));
   return d.choices?.[0]?.message?.content||'';
 }
+// Tries each enabled provider in priority order, falling back to the next
+// one on any failure (bad key, quota exhausted, transient overload, etc).
+async function callClaude(prompt){
+  const list=(CFG.aiProviders||[]).filter(p=>p.enabled!==false&&sanitizeKey(p.key));
+  if(!list.length)throw new Error('No API key configured');
+  const errors=[];
+  for(const p of list){
+    try{
+      return await callProviderWithRetry(p,prompt);
+    }catch(e){
+      console.warn('[AI fallback] provider failed, trying next:',e.message);
+      errors.push(e.message);
+    }
+  }
+  throw new Error('All '+list.length+' AI provider(s) failed:\n'+errors.join('\n'));
+}
 async function generateWithClaude(){
-  if(!CFG.deepseekKey){toast('Add your NVIDIA API key in Settings first','w');showPage('settings');return;}
+  if(!hasAnyAiKey()){toast('Add an API key in Settings first','w');showPage('settings');return;}
   const title=v('post-title');if(!title){toast('Enter a post title first','w');return;}
   const banner=document.getElementById('ai-writing-banner');const bodyEl=document.getElementById('post-body');
   banner.style.display='flex';let dots='';
@@ -1382,7 +1446,7 @@ function buildArticleFallback(title,ev){
 }
 async function buildArticleWithClaude(title,ev,isHighlights=false){
   const cacheKey=(ev?evKey(ev):title)+(isHighlights?'|hl':'');if(dsArticleCache[cacheKey])return dsArticleCache[cacheKey];
-  if(CFG.deepseekKey){try{const prompt=buildClaudePrompt(title,ev,isHighlights);const article=await callClaude(prompt);dsArticleCache[cacheKey]=article;return article;}catch(e){console.warn('[Claude] Article gen failed, using fallback:',e.message);}}
+  if(hasAnyAiKey()){try{const prompt=buildClaudePrompt(title,ev,isHighlights);const article=await callClaude(prompt);dsArticleCache[cacheKey]=article;return article;}catch(e){console.warn('[AI] Article gen failed, using fallback:',e.message);}}
   return buildArticleFallback(title,ev);
 }
 async function buildArticleWithStreams(title,ev,isHighlights=false){
@@ -1728,7 +1792,7 @@ async function genAndFill(sid){
   if(fin&&ev.type==='match'){const modeEl=document.getElementById('c-mode');if(modeEl)modeEl.value='highlights';if(score)set('c-score',score);}
   if(!fin&&ev.startTime){const offset=(CFG.schedTiming||60)*60000;const schedDt=new Date(ev.startTime.getTime()-offset);const local=new Date(schedDt.getTime()-schedDt.getTimezoneOffset()*60000).toISOString().slice(0,16);const dtEl=document.getElementById('post-schedule-dt');if(dtEl)dtEl.value=local;document.getElementById('schedule-dt-wrap').style.display='block';}
   currentComposeEv=ev;updateSEO();showPage('compose');onTitleChange();
-  toast(CFG.deepseekKey?(fin?'Highlights article written by DeepSeek AI ✓':'Article written by DeepSeek AI ✓'):'Content generated ✓','s');
+  toast(hasAnyAiKey()?(fin?'Highlights article written by AI ✓':'Article written by AI ✓'):'Content generated ✓','s');
   if(CFG.autoFetchStreams&&ev.type==='match')populateComposeStreams(ev);
 }
 async function populateComposeStreams(ev){
@@ -2708,8 +2772,8 @@ async function quickPostRace(id){
 
 // ── Article body for a race (DeepSeek AI or rich fallback)
 async function buildRaceArticleBody(race){
-  // Try DeepSeek AI first
-  if(CFG.deepseekKey){
+  // Try AI first
+  if(hasAnyAiKey()){
     try{
       const words={short:300,medium:600,long:1000,xl:1500}[CFG.deepseekLength]||600;
       const tone=CFG.deepseekTone||'enthusiastic sports journalist';
@@ -2749,7 +2813,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       persistLogoCache();
     });
   }
-  console.log('[Sports 803] Dashboard v8 loaded. DeepSeek AI: '+(CFG.deepseekKey?'✓':'not configured')+'. Highlights player: active.');
+  console.log('[Sports 803] Dashboard v8 loaded. AI providers: '+(CFG.aiProviders||[]).length+' configured, '+(hasAnyAiKey()?'ready':'not ready')+'. Highlights player: active.');
 });
 </script>
 
