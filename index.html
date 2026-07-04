@@ -900,7 +900,12 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 const SK_CFG='s803v7_cfg',SK_CH='s803v7_ch',SK_POST='s803v7_post',SK_LOGO='s803v7_logo',SK_DDKC='s803v7_ddkc',SK_FR='s803v7_fr';
 const ESPN='https://site.api.espn.com/apis/site/v2/sports';
 const TSDB='https://www.thesportsdb.com/api/v1/json/3';
-const CLAUDE_API='https://integrate.api.nvidia.com/v1/chat/completions';
+// GitHub Pages (sports803.github.io) is static-only and can't call NVIDIA's
+// API directly (blocked by CORS). This proxy request instead goes to a small
+// serverless function hosted on Vercel — deploy api/deepseek.js there, then
+// replace the URL below with YOUR Vercel project's URL + /api/deepseek
+// (e.g. https://deepseek-proxy-yourname.vercel.app/api/deepseek).
+const CLAUDE_API='https://deepseek-proxy-sage.vercel.app/api/deepseek';
 
 let CFG={
   blogId:'',clientId:'',imgbbKey:'',playerBase:'https://soulmap1.blogspot.com/p/media-player.html',
