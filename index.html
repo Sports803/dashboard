@@ -237,7 +237,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
   <div class="logo">
     <div class="logo-live"></div>
     Sports <span style="color:#fff">803</span>
-    <span class="logo-ver">v8 · Claude AI + Highlights</span>
+    <span class="logo-ver">v8 · DeepSeek AI + Highlights</span>
   </div>
   <div class="topbar-center">
     <div class="nav-pills">
@@ -295,10 +295,10 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
       </div>
     </div>
     <div class="card">
-      <div class="card-title">🤖 Claude AI Engine
+      <div class="card-title">🤖 DeepSeek AI Engine
         <span class="ct-right" id="ds-status-badge"><span class="deepseek-badge">NOT CONFIGURED</span></span>
       </div>
-      <div id="ds-engine-status" style="font-size:.76rem;color:var(--muted2)">Add Claude API key in Settings → AI Content to enable AI-written articles.</div>
+      <div id="ds-engine-status" style="font-size:.76rem;color:var(--muted2)">Add NVIDIA API key in Settings → AI Content to enable AI-written articles.</div>
       <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
         <button class="btn-purple btn-xs" onclick="showPage('settings')">⚙ Configure DeepSeek</button>
         <button class="btn-ghost btn-xs" onclick="testClaude()">🧪 Test Connection</button>
@@ -378,7 +378,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
   </div>
   <div id="ai-writing-banner" style="display:none" class="ai-writing-indicator">
     <div class="ai-dot"></div>
-    <span style="font-family:var(--cond);font-size:.8rem;font-weight:700">Claude AI is writing your article…</span>
+    <span style="font-family:var(--cond);font-size:.8rem;font-weight:700">DeepSeek AI is writing your article…</span>
     <span id="ai-writing-dots" style="font-family:var(--mono);font-size:.75rem;color:var(--purple)" id="ai-writing-dots"></span>
   </div>
   <div class="compose-layout">
@@ -401,7 +401,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
             <div><div style="font-size:.62rem;color:var(--muted2);margin-bottom:2px">Labels</div><div class="seo-bar"><div class="seo-fill" id="seo-l-bar" style="width:0%;background:var(--orange)"></div></div><div class="seo-score" id="seo-l-score">0</div></div>
           </div>
         </div>
-        <div class="form-group"><label>Post Body</label><textarea id="post-body" rows="14" placeholder="Article content… or click 🤖 AI Write to generate with Claude AI" oninput="updateSEO()"></textarea></div>
+        <div class="form-group"><label>Post Body</label><textarea id="post-body" rows="14" placeholder="Article content… or click 🤖 AI Write to generate with DeepSeek AI" oninput="updateSEO()"></textarea></div>
         <div class="form-row">
           <div><label>Labels</label><input type="text" id="post-labels" value="sports 803,live " oninput="updateSEO()"></div>
           <div><label>Status</label><select id="post-status"><option value="DRAFT">Draft</option><option value="LIVE">Live</option></select></div>
@@ -459,7 +459,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
           <button class="btn-ghost btn-xs" onclick="injectHeader('h2','Head-to-Head')">H2 H2H</button>
           <button class="btn-ghost btn-xs" onclick="injectHeader('h2','Predicted Lineups')">H2 Lineups</button>
         </div>
-        <button class="inj-btn" onclick="injectBlock('full')"><span class="inj-icon">🤖</span><div><div class="inj-title">Full AI Article (Claude AI)</div><div class="inj-desc">Long-form match preview — uses Claude API if configured, fallback template otherwise</div></div></button>
+        <button class="inj-btn" onclick="injectBlock('full')"><span class="inj-icon">🤖</span><div><div class="inj-title">Full AI Article (DeepSeek AI)</div><div class="inj-desc">Long-form match preview — uses DeepSeek API if configured, fallback template otherwise</div></div></button>
         <button class="inj-btn" onclick="injectBlock('cta')"><span class="inj-icon">📺</span><div><div class="inj-title">CTA Stream Block</div><div class="inj-desc">HD streaming call-to-action banner</div></div></button>
         <button class="inj-btn" onclick="injectBlock('faq')"><span class="inj-icon">❓</span><div><div class="inj-title">FAQ Block (Schema)</div><div class="inj-desc">SEO-friendly Q&amp;A markup</div></div></button>
         <button class="inj-btn" onclick="injectBlock('stats')"><span class="inj-icon">📊</span><div><div class="inj-title">Stats Table</div><div class="inj-desc">Tactical prediction table</div></div></button>
@@ -720,23 +720,23 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 <button class="btn-red btn-sm" onclick="saveCFG()">💾 Save</button>
     </div>
     <div class="card" style="grid-column:1/-1;border-color:rgba(114,9,183,.3)">
-      <div class="card-title" style="color:#b47ffa">🤖 Claude AI Content Engine
+      <div class="card-title" style="color:#b47ffa">🤖 DeepSeek AI Content Engine
         <span class="ct-right"><span id="ds-cfg-badge" class="deepseek-badge">NOT CONFIGURED</span></span>
       </div>
       <div style="background:rgba(114,9,183,.06);border:1px solid rgba(114,9,183,.2);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.78rem">
-        <strong style="color:#b47ffa;font-family:var(--cond)">Why Claude?</strong>
-        <span style="color:var(--muted2)"> Anthropic Claude API · Writes detailed match previews &amp; highlights · Excellent SEO · Context-aware articles using team names, league, score, and kickoff time.</span>
+        <strong style="color:#b47ffa;font-family:var(--cond)">Why DeepSeek?</strong>
+        <span style="color:var(--muted2)"> DeepSeek via NVIDIA NIM API · Writes detailed match previews &amp; highlights · Excellent SEO · Context-aware articles using team names, league, score, and kickoff time.</span>
       </div>
       <div class="form-row">
         <div>
-          <label>Claude API Key <span style="color:var(--muted2);font-weight:400">— get at console.anthropic.com</span></label>
-          <input type="password" id="cfg-deepseek-key" placeholder="sk-ant-…" oninput="onClaudeKeyChange()">
+          <label>NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span></label>
+          <input type="password" id="cfg-deepseek-key" placeholder="nvapi-…" oninput="onClaudeKeyChange()">
         </div>
         <div>
-          <label>Claude Model</label>
+          <label>DeepSeek Model</label>
           <select id="cfg-deepseek-model" onchange="saveCFG()">
-            <option value="claude-sonnet-4-20250514">Claude Sonnet 4 (best quality)</option>
-            <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (fast &amp; cheap)</option>
+            <option value="deepseek-ai/deepseek-v4-flash">DeepSeek V4 Flash (fast &amp; cheap)</option>
+            <option value="deepseek-ai/deepseek-r1">DeepSeek R1 (best quality)</option>
           </select>
         </div>
       </div>
@@ -754,7 +754,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
         </select>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-purple btn-sm" onclick="saveCFG()">💾 Save Claude Settings</button>
+        <button class="btn-purple btn-sm" onclick="saveCFG()">💾 Save DeepSeek Settings</button>
         <button class="btn-ghost btn-sm" onclick="testClaude()">🧪 Test Connection</button>
       </div>
       <div id="ds-test-result" style="font-size:.72rem;color:var(--muted2);margin-top:8px;font-family:var(--mono);min-height:14px"></div>
@@ -900,7 +900,7 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 const SK_CFG='s803v7_cfg',SK_CH='s803v7_ch',SK_POST='s803v7_post',SK_LOGO='s803v7_logo',SK_DDKC='s803v7_ddkc',SK_FR='s803v7_fr';
 const ESPN='https://site.api.espn.com/apis/site/v2/sports';
 const TSDB='https://www.thesportsdb.com/api/v1/json/3';
-const CLAUDE_API='https://api.anthropic.com/v1/messages';
+const CLAUDE_API='https://integrate.api.nvidia.com/v1/chat/completions';
 
 let CFG={
   blogId:'',clientId:'',imgbbKey:'',playerBase:'https://soulmap1.blogspot.com/p/media-player.html',
@@ -911,7 +911,7 @@ let CFG={
   progTxtUrl:'https://sportsonline.st/prog.txt',
   autoFetchStreams:false,enableDdkanqu:false,enableKafeizhibo:false,embedStreamsInPost:true,
   ddkanquMappingsRaw:'',
-  deepseekKey:'',deepseekModel:'claude-sonnet-4-20250514',deepseekTone:'',deepseekLength:'medium',
+  deepseekKey:'',deepseekModel:'deepseek-ai/deepseek-v4-flash',deepseekTone:'',deepseekLength:'medium',
 ytApiKey:''
 };
 let LOGO_OVERRIDES={},LOGO_CACHE={};
@@ -1033,7 +1033,7 @@ function saveCFG(){
   CFG.embedStreamsInPost=document.getElementById('cfg-embed-streams-in-post')?.checked??true;
   CFG.ddkanquMappingsRaw=v('cfg-ddkanqu-mappings');
   CFG.deepseekKey=v('cfg-deepseek-key');
-  CFG.deepseekModel=document.getElementById('cfg-deepseek-model')?.value||'deepseek-chat';
+  CFG.deepseekModel=document.getElementById('cfg-deepseek-model')?.value||'deepseek-ai/deepseek-v4-flash';
   CFG.deepseekTone=v('cfg-deepseek-tone');
   CFG.deepseekLength=document.getElementById('cfg-deepseek-length')?.value||'medium';
   ddkanquMappings=parseDDKMappings(CFG.ddkanquMappingsRaw);
@@ -1057,7 +1057,7 @@ function applyConfigToUI(){
   if(document.getElementById('cfg-enable-kafeizhibo'))document.getElementById('cfg-enable-kafeizhibo').checked=CFG.enableKafeizhibo||false;
   if(document.getElementById('cfg-embed-streams-in-post'))document.getElementById('cfg-embed-streams-in-post').checked=CFG.embedStreamsInPost!==false;
   set('cfg-deepseek-key',CFG.deepseekKey||'');set('cfg-deepseek-tone',CFG.deepseekTone||'');
-  if(document.getElementById('cfg-deepseek-model'))document.getElementById('cfg-deepseek-model').value=CFG.deepseekModel||'deepseek-chat';
+  if(document.getElementById('cfg-deepseek-model'))document.getElementById('cfg-deepseek-model').value=CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash';
   if(document.getElementById('cfg-deepseek-length'))document.getElementById('cfg-deepseek-length').value=CFG.deepseekLength||'medium';
   updateClaudeStatus();
 }
@@ -1079,24 +1079,25 @@ function updateClaudeStatus(){
   if(hasKey){
     if(badge1)badge1.innerHTML='<span class="deepseek-badge" style="background:rgba(114,9,183,.25);color:#b47ffa">✓ READY</span>';
     if(badge2){badge2.textContent='✓ CONFIGURED';badge2.style.background='rgba(114,9,183,.25)';badge2.style.color='#b47ffa';}
-    if(statusEl)statusEl.innerHTML='Claude AI is configured — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
+    if(statusEl)statusEl.innerHTML='DeepSeek AI is configured — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
   }else{
     if(badge1)badge1.innerHTML='<span class="deepseek-badge">NOT CONFIGURED</span>';
     if(badge2){badge2.textContent='NOT CONFIGURED';badge2.style.background='';badge2.style.color='';}
-    if(statusEl)statusEl.textContent='Add Claude API key in Settings → AI Content to enable AI-written articles.';
+    if(statusEl)statusEl.textContent='Add NVIDIA API key in Settings → AI Content to enable AI-written articles.';
   }
   const btn=document.getElementById('ds-gen-btn');if(btn)btn.style.opacity=hasKey?'1':'0.5';
 }
 async function testClaude(){
   const key=CFG.deepseekKey||v('cfg-deepseek-key');
   const res=document.getElementById('ds-test-result');
-  if(!key){if(res)res.textContent='⚠ No API key configured.';toast('Add your Claude API key first','w');return;}
-  if(res)res.textContent='Testing connection…';toast('Testing Claude connection…','i');
+  if(!key){if(res)res.textContent='⚠ No API key configured.';toast('Add your NVIDIA API key first','w');return;}
+  if(res)res.textContent='Testing connection…';toast('Testing DeepSeek connection…','i');
   try{
-    const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:CFG.deepseekModel||'claude-sonnet-4-20250514',max_tokens:30,messages:[{role:'user',content:'Reply only: "Sports 803 Claude OK"'}]})});
+    const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash',messages:[{role:'user',content:'Reply only: "Sports 803 DeepSeek OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
     const d=await r.json();
-    if(d.content?.[0]){if(res)res.textContent='✓ Connected: '+d.content[0].text;toast('Claude AI connected ✓','s');}
-    else{if(res)res.textContent='✗ Error: '+(d.error?.message||JSON.stringify(d));toast('Claude error — check key','e');}
+    const msg=d.choices?.[0]?.message;
+    if(msg?.content){if(res)res.textContent='✓ Connected: '+msg.content;toast('DeepSeek AI connected ✓','s');}
+    else{if(res)res.textContent='✗ Error: '+(d.error?.message||JSON.stringify(d));toast('DeepSeek error — check key','e');}
   }catch(e){if(res)res.textContent='✗ Network error: '+e.message;toast('Connection failed','e');}
 }
 const DS_LENGTH_WORDS={short:300,medium:600,long:1000,xl:1500};
@@ -1119,20 +1120,20 @@ function buildClaudePrompt(title,ev,isHighlights=false){
   return 'You are a '+tone+' writing for Sports 803, a free sports streaming blog.\nWrite a detailed match preview article for: '+h+' vs '+a+' — '+lg+'.\nKickoff: '+ts+'.\nRequirements:\n- Approximately '+words+' words\n- HTML formatted: use <h2>, <p>, <strong>, <ul><li> tags\n- Sections: Match Overview, Current Form, Key Players To Watch, Head-to-Head History, Predicted Lineups & Tactics, Match Prediction\n- Include realistic tactical analysis and form assessment\n- End with: <p>📺 <strong>Watch '+h+' vs '+a+' FREE on Sports 803</strong> — no sign-up required: <a href="'+player+'">'+player+'</a></p>\n- No markdown, only HTML tags\n- Do not include DOCTYPE or body tags, only the article HTML';
 }
 async function callClaude(prompt){
-  const key=CFG.deepseekKey;if(!key)throw new Error('No Claude API key configured');
-  const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:CFG.deepseekModel||'claude-sonnet-4-20250514',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
-  if(!r.ok){const e=await r.text();throw new Error('Claude API error '+r.status+': '+e);}
-  const d=await r.json();if(d.error)throw new Error(d.error.message);
-  return d.content?.[0]?.text||'';
+  const key=CFG.deepseekKey;if(!key)throw new Error('No NVIDIA API key configured');
+  const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash',messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
+  if(!r.ok){const e=await r.text();throw new Error('DeepSeek API error '+r.status+': '+e);}
+  const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+  return d.choices?.[0]?.message?.content||'';
 }
 async function generateWithClaude(){
-  if(!CFG.deepseekKey){toast('Add your Claude API key in Settings first','w');showPage('settings');return;}
+  if(!CFG.deepseekKey){toast('Add your NVIDIA API key in Settings first','w');showPage('settings');return;}
   const title=v('post-title');if(!title){toast('Enter a post title first','w');return;}
   const banner=document.getElementById('ai-writing-banner');const bodyEl=document.getElementById('post-body');
   banner.style.display='flex';let dots='';
   const dotsTimer=setInterval(()=>{dots=dots.length>=3?'':dots+'.';const el=document.getElementById('ai-writing-dots');if(el)el.textContent=dots;},400);
-  try{const prompt=buildClaudePrompt(title,currentComposeEv);const article=await callClaude(prompt);bodyEl.value=article;updateSEO();toast('✓ Article written by Claude AI','s');}
-  catch(e){toast('Claude error: '+e.message,'e');}
+  try{const prompt=buildClaudePrompt(title,currentComposeEv);const article=await callClaude(prompt);bodyEl.value=article;updateSEO();toast('✓ Article written by DeepSeek AI','s');}
+  catch(e){toast('DeepSeek error: '+e.message,'e');}
   finally{clearInterval(dotsTimer);banner.style.display='none';}
 }
 const P = {
@@ -1631,7 +1632,7 @@ async function genAndFill(sid){
   if(fin&&ev.type==='match'){const modeEl=document.getElementById('c-mode');if(modeEl)modeEl.value='highlights';if(score)set('c-score',score);}
   if(!fin&&ev.startTime){const offset=(CFG.schedTiming||60)*60000;const schedDt=new Date(ev.startTime.getTime()-offset);const local=new Date(schedDt.getTime()-schedDt.getTimezoneOffset()*60000).toISOString().slice(0,16);const dtEl=document.getElementById('post-schedule-dt');if(dtEl)dtEl.value=local;document.getElementById('schedule-dt-wrap').style.display='block';}
   currentComposeEv=ev;updateSEO();showPage('compose');onTitleChange();
-  toast(CFG.deepseekKey?(fin?'Highlights article written by Claude AI ✓':'Article written by Claude AI ✓'):'Content generated ✓','s');
+  toast(CFG.deepseekKey?(fin?'Highlights article written by DeepSeek AI ✓':'Article written by DeepSeek AI ✓'):'Content generated ✓','s');
   if(CFG.autoFetchStreams&&ev.type==='match')populateComposeStreams(ev);
 }
 async function populateComposeStreams(ev){
@@ -2532,7 +2533,7 @@ async function genRacePost(id){
   const autoBadge=document.getElementById('compose-auto-badge');
   if(autoBadge)autoBadge.style.display='inline-flex';
 
-  // ── ARTICLE BODY: Claude AI or rich fallback, with player iframe appended ──
+  // ── ARTICLE BODY: DeepSeek AI or rich fallback, with player iframe appended ──
   toast('Generating article…','i');
   const article=await buildRaceArticleBody(race);
 
@@ -2609,9 +2610,9 @@ async function quickPostRace(id){
   }
 }
 
-// ── Article body for a race (Claude AI or rich fallback)
+// ── Article body for a race (DeepSeek AI or rich fallback)
 async function buildRaceArticleBody(race){
-  // Try Claude AI first
+  // Try DeepSeek AI first
   if(CFG.deepseekKey){
     try{
       const words={short:300,medium:600,long:1000,xl:1500}[CFG.deepseekLength]||600;
@@ -2652,7 +2653,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       persistLogoCache();
     });
   }
-  console.log('[Sports 803] Dashboard v8 loaded. Claude AI: '+(CFG.deepseekKey?'✓':'not configured')+'. Highlights player: active.');
+  console.log('[Sports 803] Dashboard v8 loaded. DeepSeek AI: '+(CFG.deepseekKey?'✓':'not configured')+'. Highlights player: active.');
 });
 </script>
 
