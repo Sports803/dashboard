@@ -720,24 +720,53 @@ button:disabled{opacity:.4;cursor:not-allowed;transform:none!important}
 <button class="btn-red btn-sm" onclick="saveCFG()">💾 Save</button>
     </div>
     <div class="card" style="grid-column:1/-1;border-color:rgba(114,9,183,.3)">
-      <div class="card-title" style="color:#b47ffa">🤖 DeepSeek AI Content Engine
+      <div class="card-title" style="color:#b47ffa">🤖 AI Content Engine
         <span class="ct-right"><span id="ds-cfg-badge" class="deepseek-badge">NOT CONFIGURED</span></span>
       </div>
       <div style="background:rgba(114,9,183,.06);border:1px solid rgba(114,9,183,.2);border-radius:8px;padding:12px;margin-bottom:12px;font-size:.78rem">
-        <strong style="color:#b47ffa;font-family:var(--cond)">Why DeepSeek?</strong>
-        <span style="color:var(--muted2)"> DeepSeek via NVIDIA NIM API · Writes detailed match previews &amp; highlights · Excellent SEO · Context-aware articles using team names, league, score, and kickoff time.</span>
+        <strong style="color:#b47ffa;font-family:var(--cond)">Why AI articles?</strong>
+        <span style="color:var(--muted2)"> Writes detailed match previews &amp; highlights · Excellent SEO · Context-aware articles using team names, league, score, and kickoff time. Choose NVIDIA (DeepSeek + other NIM models) or Google Gemini below.</span>
       </div>
       <div class="form-row">
         <div>
-          <label>NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span></label>
-          <input type="password" id="cfg-deepseek-key" placeholder="nvapi-…" oninput="onClaudeKeyChange()">
+          <label>AI Provider</label>
+          <select id="cfg-deepseek-provider" onchange="onProviderChange()">
+            <option value="nvidia">NVIDIA NIM (DeepSeek, Llama, Nemotron, Qwen…)</option>
+            <option value="gemini">Google Gemini</option>
+          </select>
         </div>
         <div>
-          <label>DeepSeek Model</label>
-          <select id="cfg-deepseek-model" onchange="saveCFG()">
-            <option value="deepseek-ai/deepseek-v4-flash">DeepSeek V4 Flash (fast &amp; cheap)</option>
-            <option value="deepseek-ai/deepseek-r1">DeepSeek R1 (best quality)</option>
+          <label id="cfg-deepseek-key-label">NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span></label>
+          <input type="password" id="cfg-deepseek-key" placeholder="nvapi-…" oninput="onClaudeKeyChange()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Model</label>
+          <select id="cfg-deepseek-model" onchange="onModelSelectChange()">
+            <optgroup id="cfg-model-group-nvidia" label="NVIDIA NIM">
+              <option value="deepseek-ai/deepseek-v4-flash">DeepSeek V4 Flash (fast &amp; cheap)</option>
+              <option value="deepseek-ai/deepseek-v4-pro">DeepSeek V4 Pro (best quality, 1M ctx)</option>
+              <option value="deepseek-ai/deepseek-r1">DeepSeek R1 (reasoning)</option>
+              <option value="meta/llama-3.3-70b-instruct">Llama 3.3 70B Instruct</option>
+              <option value="meta/llama-3.1-405b-instruct">Llama 3.1 405B Instruct</option>
+              <option value="qwen/qwen2.5-72b-instruct">Qwen 2.5 72B Instruct</option>
+              <option value="nvidia/llama-3.1-nemotron-70b-instruct">Nemotron 70B Instruct</option>
+              <option value="mistralai/mixtral-8x22b-instruct-v0.1">Mixtral 8x22B Instruct</option>
+              <option value="__custom__">Custom model ID…</option>
+            </optgroup>
+            <optgroup id="cfg-model-group-gemini" label="Google Gemini" style="display:none">
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash (fast &amp; cheap)</option>
+              <option value="gemini-2.5-pro">Gemini 2.5 Pro (best quality)</option>
+              <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (fastest)</option>
+              <option value="gemini-3.5-flash">Gemini 3.5 Flash</option>
+              <option value="__custom__">Custom model ID…</option>
+            </optgroup>
           </select>
+        </div>
+        <div id="cfg-model-custom-wrap" style="display:none">
+          <label>Custom Model ID <span style="color:var(--muted2);font-weight:400">— e.g. any NVIDIA NIM catalog ID</span></label>
+          <input type="text" id="cfg-deepseek-model-custom" placeholder="e.g. mistralai/mistral-large-2-instruct" oninput="saveCFG()">
         </div>
       </div>
       <div class="form-group">
@@ -905,7 +934,7 @@ const TSDB='https://www.thesportsdb.com/api/v1/json/3';
 // serverless function hosted on Vercel — deploy api/deepseek.js there, then
 // replace the URL below with YOUR Vercel project's URL + /api/deepseek
 // (e.g. https://deepseek-proxy-yourname.vercel.app/api/deepseek).
-const CLAUDE_API='https://deepseek-proxy-sage.vercel.app/api/deepseek';
+const CLAUDE_API='https://deepseek-proxy-YOUR-PROJECT.vercel.app/api/deepseek';
 
 let CFG={
   blogId:'',clientId:'',imgbbKey:'',playerBase:'https://soulmap1.blogspot.com/p/media-player.html',
@@ -916,7 +945,7 @@ let CFG={
   progTxtUrl:'https://sportsonline.st/prog.txt',
   autoFetchStreams:false,enableDdkanqu:false,enableKafeizhibo:false,embedStreamsInPost:true,
   ddkanquMappingsRaw:'',
-  deepseekKey:'',deepseekModel:'deepseek-ai/deepseek-v4-flash',deepseekTone:'',deepseekLength:'medium',
+  deepseekKey:'',deepseekProvider:'nvidia',deepseekModel:'deepseek-ai/deepseek-v4-flash',deepseekModelCustom:'',deepseekTone:'',deepseekLength:'medium',
 ytApiKey:''
 };
 let LOGO_OVERRIDES={},LOGO_CACHE={};
@@ -1037,8 +1066,10 @@ function saveCFG(){
   CFG.enableKafeizhibo=document.getElementById('cfg-enable-kafeizhibo')?.checked||false;
   CFG.embedStreamsInPost=document.getElementById('cfg-embed-streams-in-post')?.checked??true;
   CFG.ddkanquMappingsRaw=v('cfg-ddkanqu-mappings');
-  CFG.deepseekKey=v('cfg-deepseek-key');
+  CFG.deepseekProvider=document.getElementById('cfg-deepseek-provider')?.value||'nvidia';
+  CFG.deepseekKey=sanitizeKey(v('cfg-deepseek-key'));
   CFG.deepseekModel=document.getElementById('cfg-deepseek-model')?.value||'deepseek-ai/deepseek-v4-flash';
+  CFG.deepseekModelCustom=v('cfg-deepseek-model-custom');
   CFG.deepseekTone=v('cfg-deepseek-tone');
   CFG.deepseekLength=document.getElementById('cfg-deepseek-length')?.value||'medium';
   ddkanquMappings=parseDDKMappings(CFG.ddkanquMappingsRaw);
@@ -1062,8 +1093,24 @@ function applyConfigToUI(){
   if(document.getElementById('cfg-enable-kafeizhibo'))document.getElementById('cfg-enable-kafeizhibo').checked=CFG.enableKafeizhibo||false;
   if(document.getElementById('cfg-embed-streams-in-post'))document.getElementById('cfg-embed-streams-in-post').checked=CFG.embedStreamsInPost!==false;
   set('cfg-deepseek-key',CFG.deepseekKey||'');set('cfg-deepseek-tone',CFG.deepseekTone||'');
+  if(document.getElementById('cfg-deepseek-provider'))document.getElementById('cfg-deepseek-provider').value=CFG.deepseekProvider||'nvidia';
   if(document.getElementById('cfg-deepseek-model'))document.getElementById('cfg-deepseek-model').value=CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash';
+  set('cfg-deepseek-model-custom',CFG.deepseekModelCustom||'');
   if(document.getElementById('cfg-deepseek-length'))document.getElementById('cfg-deepseek-length').value=CFG.deepseekLength||'medium';
+  // Sync the provider/model UI (group visibility, custom-field visibility, key label) without re-saving
+  if(document.getElementById('cfg-deepseek-provider')){
+    const p=CFG.deepseekProvider||'nvidia';
+    const nvGroup=document.getElementById('cfg-model-group-nvidia'),gmGroup=document.getElementById('cfg-model-group-gemini');
+    if(nvGroup)nvGroup.style.display=(p==='nvidia')?'':'none';
+    if(gmGroup)gmGroup.style.display=(p==='gemini')?'':'none';
+    const keyLabel=document.getElementById('cfg-deepseek-key-label'),keyInput=document.getElementById('cfg-deepseek-key');
+    if(keyLabel&&keyInput){
+      if(p==='gemini'){keyLabel.innerHTML='Gemini API Key <span style="color:var(--muted2);font-weight:400">— get at aistudio.google.com</span>';keyInput.placeholder='AIzaSy…';}
+      else{keyLabel.innerHTML='NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span>';keyInput.placeholder='nvapi-…';}
+    }
+    const wrap=document.getElementById('cfg-model-custom-wrap');
+    if(wrap)wrap.style.display=(CFG.deepseekModel==='__custom__')?'':'none';
+  }
   updateClaudeStatus();
 }
 function v(id){return document.getElementById(id)?.value?.trim()||'';}
@@ -1074,35 +1121,77 @@ function clearAll(){if(!confirm('Clear all data?'))return;[SK_CFG,SK_CH,SK_POST,
 function saveLogoOverrides(){CFG.logoOverridesRaw=v('cfg-logo-overrides');LOGO_OVERRIDES=parseLOOverrides(CFG.logoOverridesRaw);saveAll();toast('Overrides saved — '+Object.keys(LOGO_OVERRIDES).length+' entries ✓','s');}
 function parseLOOverrides(raw){const o={};(raw||'').split('\n').forEach(l=>{const[k,...vv]=l.split('=');if(k&&vv.length)o[k.trim().toLowerCase()]=vv.join('=').trim();});return o;}
 
-// ═══ CLAUDE AI ═══
-function onClaudeKeyChange(){CFG.deepseekKey=v('cfg-deepseek-key');updateClaudeStatus();}
+// ═══ AI ENGINE (NVIDIA NIM + Google Gemini via proxy) ═══
+// Strips anything that isn't a plain visible ASCII character — smart quotes,
+// zero-width spaces, stray newlines, etc. copied in by accident from Notes/
+// screenshots are exactly what triggers Safari's cryptic header error below.
+function sanitizeKey(s){return (s||'').replace(/[^\x21-\x7E]/g,'');}
+function currentProvider(){return document.getElementById('cfg-deepseek-provider')?.value||CFG.deepseekProvider||'nvidia';}
+function currentModel(){
+  const sel=document.getElementById('cfg-deepseek-model')?.value||CFG.deepseekModel;
+  if(sel==='__custom__'){return v('cfg-deepseek-model-custom')||CFG.deepseekModelCustom||'';}
+  return sel||'deepseek-ai/deepseek-v4-flash';
+}
+function onProviderChange(){
+  const p=document.getElementById('cfg-deepseek-provider').value;
+  document.getElementById('cfg-model-group-nvidia').style.display=(p==='nvidia')?'':'none';
+  document.getElementById('cfg-model-group-gemini').style.display=(p==='gemini')?'':'none';
+  const modelSel=document.getElementById('cfg-deepseek-model');
+  // Jump to the first real (non-custom) option of the newly active group
+  const activeGroup=(p==='nvidia')?document.getElementById('cfg-model-group-nvidia'):document.getElementById('cfg-model-group-gemini');
+  const firstOpt=activeGroup.querySelector('option:not([value="__custom__"])');
+  if(firstOpt)modelSel.value=firstOpt.value;
+  const keyLabel=document.getElementById('cfg-deepseek-key-label');
+  const keyInput=document.getElementById('cfg-deepseek-key');
+  if(p==='gemini'){
+    keyLabel.innerHTML='Gemini API Key <span style="color:var(--muted2);font-weight:400">— get at aistudio.google.com</span>';
+    keyInput.placeholder='AIzaSy…';
+  }else{
+    keyLabel.innerHTML='NVIDIA API Key <span style="color:var(--muted2);font-weight:400">— get at build.nvidia.com</span>';
+    keyInput.placeholder='nvapi-…';
+  }
+  onModelSelectChange();
+  saveCFG();
+}
+function onModelSelectChange(){
+  const isCustom=document.getElementById('cfg-deepseek-model')?.value==='__custom__';
+  const wrap=document.getElementById('cfg-model-custom-wrap');
+  if(wrap)wrap.style.display=isCustom?'':'none';
+  saveCFG();
+}
+function onClaudeKeyChange(){CFG.deepseekKey=sanitizeKey(v('cfg-deepseek-key'));updateClaudeStatus();}
 function updateClaudeStatus(){
   const hasKey=!!CFG.deepseekKey;
   const badge1=document.getElementById('ds-status-badge');
   const badge2=document.getElementById('ds-cfg-badge');
   const statusEl=document.getElementById('ds-engine-status');
+  const providerLabel=(CFG.deepseekProvider==='gemini')?'Gemini':'DeepSeek/NVIDIA';
   if(hasKey){
     if(badge1)badge1.innerHTML='<span class="deepseek-badge" style="background:rgba(114,9,183,.25);color:#b47ffa">✓ READY</span>';
     if(badge2){badge2.textContent='✓ CONFIGURED';badge2.style.background='rgba(114,9,183,.25)';badge2.style.color='#b47ffa';}
-    if(statusEl)statusEl.innerHTML='DeepSeek AI is configured — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
+    if(statusEl)statusEl.innerHTML=providerLabel+' AI is configured — click <strong style="color:#b47ffa">🤖 AI Write</strong> in Compose to generate articles.';
   }else{
     if(badge1)badge1.innerHTML='<span class="deepseek-badge">NOT CONFIGURED</span>';
     if(badge2){badge2.textContent='NOT CONFIGURED';badge2.style.background='';badge2.style.color='';}
-    if(statusEl)statusEl.textContent='Add NVIDIA API key in Settings → AI Content to enable AI-written articles.';
+    if(statusEl)statusEl.textContent='Add your API key in Settings → AI Content to enable AI-written articles.';
   }
   const btn=document.getElementById('ds-gen-btn');if(btn)btn.style.opacity=hasKey?'1':'0.5';
 }
 async function testClaude(){
-  const key=CFG.deepseekKey||v('cfg-deepseek-key');
+  const key=sanitizeKey(CFG.deepseekKey||v('cfg-deepseek-key'));
+  const provider=currentProvider();
+  const model=currentModel();
   const res=document.getElementById('ds-test-result');
-  if(!key){if(res)res.textContent='⚠ No API key configured.';toast('Add your NVIDIA API key first','w');return;}
-  if(res)res.textContent='Testing connection…';toast('Testing DeepSeek connection…','i');
+  if(!key){if(res)res.textContent='⚠ No API key configured.';toast('Add your API key first','w');return;}
+  if(!model){if(res)res.textContent='⚠ No model selected.';toast('Pick or type a model first','w');return;}
+  if(res)res.textContent='Testing connection…';toast('Testing AI connection…','i');
   try{
-    const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash',messages:[{role:'user',content:'Reply only: "Sports 803 DeepSeek OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
-    const d=await r.json();
-    const msg=d.choices?.[0]?.message;
-    if(msg?.content){if(res)res.textContent='✓ Connected: '+msg.content;toast('DeepSeek AI connected ✓','s');}
-    else{if(res)res.textContent='✗ Error: '+(d.error?.message||JSON.stringify(d));toast('DeepSeek error — check key','e');}
+    const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'Reply only: "Sports 803 AI OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
+    const raw=await r.text();
+    let d;try{d=JSON.parse(raw);}catch{d=null;}
+    const msg=d?.choices?.[0]?.message;
+    if(r.ok&&msg?.content){if(res)res.textContent='✓ Connected ('+model+'): '+msg.content;toast('AI connected ✓','s');}
+    else{const errMsg=d?.error?.message||raw.slice(0,200)||('HTTP '+r.status);if(res)res.textContent='✗ Error: '+errMsg;toast('AI error — check key/model','e');}
   }catch(e){if(res)res.textContent='✗ Network error: '+e.message;toast('Connection failed','e');}
 }
 const DS_LENGTH_WORDS={short:300,medium:600,long:1000,xl:1500};
@@ -1125,9 +1214,11 @@ function buildClaudePrompt(title,ev,isHighlights=false){
   return 'You are a '+tone+' writing for Sports 803, a free sports streaming blog.\nWrite a detailed match preview article for: '+h+' vs '+a+' — '+lg+'.\nKickoff: '+ts+'.\nRequirements:\n- Approximately '+words+' words\n- HTML formatted: use <h2>, <p>, <strong>, <ul><li> tags\n- Sections: Match Overview, Current Form, Key Players To Watch, Head-to-Head History, Predicted Lineups & Tactics, Match Prediction\n- Include realistic tactical analysis and form assessment\n- End with: <p>📺 <strong>Watch '+h+' vs '+a+' FREE on Sports 803</strong> — no sign-up required: <a href="'+player+'">'+player+'</a></p>\n- No markdown, only HTML tags\n- Do not include DOCTYPE or body tags, only the article HTML';
 }
 async function callClaude(prompt){
-  const key=CFG.deepseekKey;if(!key)throw new Error('No NVIDIA API key configured');
-  const r=await fetch(CLAUDE_API,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:CFG.deepseekModel||'deepseek-ai/deepseek-v4-flash',messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
-  if(!r.ok){const e=await r.text();throw new Error('DeepSeek API error '+r.status+': '+e);}
+  const key=sanitizeKey(CFG.deepseekKey);if(!key)throw new Error('No API key configured');
+  const provider=CFG.deepseekProvider||'nvidia';
+  const model=(CFG.deepseekModel==='__custom__'?CFG.deepseekModelCustom:CFG.deepseekModel)||'deepseek-ai/deepseek-v4-flash';
+  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
+  if(!r.ok){const e=await r.text();throw new Error('AI API error '+r.status+': '+e);}
   const d=await r.json();if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
   return d.choices?.[0]?.message?.content||'';
 }
