@@ -893,7 +893,7 @@ const TSDB='https://www.thesportsdb.com/api/v1/json/3';
 // serverless function hosted on Vercel — deploy api/deepseek.js there, then
 // replace the URL below with YOUR Vercel project's URL + /api/deepseek
 // (e.g. https://deepseek-proxy-yourname.vercel.app/api/deepseek).
-const CLAUDE_API='https://deepseek-proxy-sage.vercel.app/api/deepseek';
+const CLAUDE_API='https://deepseek-proxy-YOUR-PROJECT.vercel.app/api/deepseek';
 
 let CFG={
   blogId:'',clientId:'',imgbbKey:'',playerBase:'https://soulmap1.blogspot.com/p/media-player.html',
@@ -1190,12 +1190,27 @@ function updateClaudeStatus(){
   }
   const btn=document.getElementById('ds-gen-btn');if(btn)btn.style.opacity=hasKey?'1':'0.5';
 }
+// Wraps fetch with a timeout so a hung request (e.g. NVIDIA/Gemini overloaded
+// and Vercel's function stalling) surfaces as a clear "timed out" message
+// instead of Safari's generic, undiagnosable "Load failed".
+async function fetchWithTimeout(url,opts,timeoutMs){
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),timeoutMs);
+  try{
+    return await fetch(url,{...opts,signal:ctrl.signal});
+  }catch(e){
+    if(e.name==='AbortError')throw new Error('Timed out after '+(timeoutMs/1000)+'s — the proxy or AI provider is not responding (may be overloaded, or the proxy URL/CORS setup may be wrong)');
+    throw new Error('Network error reaching proxy: '+e.message+' — check the CLAUDE_API URL and that the Vercel deployment is live');
+  }finally{
+    clearTimeout(timer);
+  }
+}
 async function testProviderOnce(p){
   const key=sanitizeKey(p.key);
   const model=resolveModel(p);
   if(!key)throw new Error('No API key');
   if(!model)throw new Error('No model selected');
-  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'Reply only: "Sports 803 AI OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})});
+  const r=await fetchWithTimeout(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:'Reply only: "Sports 803 AI OK"'}],temperature:1,top_p:.95,max_tokens:30,stream:false})},20000);
   const raw=await r.text();
   let d;try{d=JSON.parse(raw);}catch{d=null;}
   const msg=d?.choices?.[0]?.message;
@@ -1258,7 +1273,7 @@ async function callProviderWithRetry(p,prompt,attempt=1){
   const key=sanitizeKey(p.key);
   const model=resolveModel(p);
   if(!key||!model)throw new Error('Provider "'+p.provider+'" is missing a key or model');
-  const r=await fetch(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})});
+  const r=await fetchWithTimeout(CLAUDE_API+'?provider='+encodeURIComponent(p.provider),{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:[{role:'user',content:prompt}],temperature:1,top_p:.95,max_tokens:3000,stream:false})},45000);
   if(!r.ok){
     const e=await r.text();
     if(isTransientAIError(r.status,e)&&attempt<3){
